@@ -7,9 +7,17 @@ dogs_train['id'] = dogs_train['id'].apply(lambda x : x + '.jpg')
 
 print(dogs_train)
 
-generator = ImageDataGenerator(rescale=1./255)
+generator = ImageDataGenerator(rescale=1./255.)
 
-train_generator = generator.flow_from_dataframe(dataframe=dogs_train, directory='./train/',
-        x_col='id', y_col='breed', subset='training')
+train_generator = generator.flow_from_dataframe(
+    dataframe=dogs_train,
+    directory='./train/',
+    x_col='id',
+    y_col='breed',
+    subset='training',
+    color_mode='grayscale',
+    target=(512, 512),
+    save_to_dir='./generated/',
+    save_format='jpg')
 
 
