@@ -9,7 +9,8 @@ import numpy as np
 import keras.backend
 
 SAVED_MODEL_PATH = './saved_model'
-SAVED_MODEL_UNTRAINED_PATH = './saved_model_untrained'
+#SAVED_MODEL_UNTRAINED_PATH = './saved_model_untrained'
+SAVED_MODEL_UNTRAINED_PATH = './saved_model'
 WIDTH = 1024
 HEIGHT = 512
 
@@ -79,10 +80,13 @@ class App(Frame):
     if self.filename:
       img = image.load_img(self.filename, target_size=(256, 256), color_mode='rgb', interpolation='nearest')
       img = image.img_to_array(img)
+      img /= 255.0
+      print(img)
       img = np.expand_dims(img, axis=0)
       result = model.predict(img)
       print(result)
       top5 = list(np.argsort(result, axis=1)[:,-5:][0])
+      top5.reverse();
       result = list(result[0])
       top5_prob = list(map(lambda n : result[n] * 100, top5))
       top5 = list(map(lambda n : LABEL_NAMES[n].replace('_', ' ').title(), top5))
