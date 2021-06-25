@@ -9,6 +9,7 @@ import numpy as np
 import keras.backend
 
 SAVED_MODEL_PATH = './saved_model'
+SAVED_MODEL_UNTRAINED_PATH = './saved_model_untrained'
 WIDTH = 1024
 HEIGHT = 512
 
@@ -24,6 +25,7 @@ class App(Frame):
 
     select_image_button = Button(self, text='Select an image', command=self.select_image)
     predict_button= Button(self, text='Predict', command=self.predict)
+    predict_untrained_button= Button(self, text='Predict (untrained)', command=self.predict_untrained)
 
     blank_img = ImageTk.PhotoImage(Image.new('RGB', (512, 512), (255, 255, 255)))
     self.image_label = Label(self, image=blank_img)
@@ -45,6 +47,7 @@ class App(Frame):
     
     select_image_button.pack(padx=5, pady=5, side=tk.LEFT)
     predict_button.pack(padx=5, pady=5, side=tk.LEFT)
+    predict_untrained_button.pack(padx=5, pady=5, side=tk.LEFT)
 
     self.filename = None
 
@@ -53,6 +56,7 @@ class App(Frame):
     if K == 'tensorflow':
       keras.backend.set_image_data_format('channels_last')
     self.model = keras.models.load_model(SAVED_MODEL_PATH)
+    self.model_untrained = keras.models.load_model(SAVED_MODEL_UNTRAINED_PATH)
 
   def select_image(self):
     filetypes = (
@@ -68,13 +72,15 @@ class App(Frame):
       img = ImageTk.PhotoImage(img)
       self.image_label.configure(image=img)
       self.image_label.image = img
+      self.reset()
 
-  def predict(self):
+  def predict_common(self, model):
+    self.reset()
     if self.filename:
       img = image.load_img(self.filename, target_size=(256, 256), color_mode='rgb', interpolation='nearest')
       img = image.img_to_array(img)
       img = np.expand_dims(img, axis=0)
-      result = self.model.predict(img)
+      result = model.predict(img)
       print(result)
       top5 = list(np.argsort(result, axis=1)[:,-5:][0])
       result = list(result[0])
@@ -86,6 +92,18 @@ class App(Frame):
         self.bar[i]['value'] = prob
     else:
       messagebox.showinfo('No image selected', 'Please select an image from your computer first!')
+
+  def predict(self):
+    self.predict_common(self.model)
+  
+  def predict_untrained(self):
+    self.predict_common(self.model_untrained)
+
+  def reset(self):
+    for i in range(5):
+      self.breed_labels[i].configure(text='Breed:')
+      self.prob_labels[i].configure(text='Probability:')
+      self.bar[i]['value'] = 0
 
 root = tk.Tk()
 root.title('Dog breed analyzer')
