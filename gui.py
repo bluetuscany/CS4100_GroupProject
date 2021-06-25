@@ -71,7 +71,7 @@ class App(Frame):
 
   def predict(self):
     if self.filename:
-      img = image.load_img(self.filename, target_size=(256, 256), color_mode='grayscale', interpolation='nearest')
+      img = image.load_img(self.filename, target_size=(256, 256), color_mode='rgb', interpolation='nearest')
       img = image.img_to_array(img)
       img = np.expand_dims(img, axis=0)
       result = self.model.predict(img)
