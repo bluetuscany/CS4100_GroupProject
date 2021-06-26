@@ -9,8 +9,7 @@ import numpy as np
 import keras.backend
 
 SAVED_MODEL_PATH = './saved_model'
-#SAVED_MODEL_UNTRAINED_PATH = './saved_model_untrained'
-SAVED_MODEL_UNTRAINED_PATH = './saved_model'
+SAVED_MODEL_UNTRAINED_PATH = './saved_model_untrained' # use ./saved_model if untrained not available
 WIDTH = 1024
 HEIGHT = 512
 
